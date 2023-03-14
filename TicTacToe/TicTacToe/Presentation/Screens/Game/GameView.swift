@@ -34,6 +34,13 @@ extension GameView {
         var row2: Row
         var row3: Row
         
+        var crossLineVector: CrossLineVector?
+        
+        struct CrossLineVector: Equatable {
+            let startPoint: UnitPoint
+            let endPoint: UnitPoint
+        }
+        
         struct Row: Equatable {
             let first: SquareState
             let second: SquareState
@@ -125,6 +132,23 @@ extension GameView {
                 }
                 .padding()
                 .aspectRatio(1, contentMode: .fit)
+                .overlay(alignment: .center) {
+                    if let crossLine = board.crossLineVector {
+                        GeometryReader { geo in
+                            Path { path in
+                                path.move(to: CGPoint(x: 10, y: geo.size.height / 2))
+                                path.addLine(to: CGPoint(x: geo.size.width - 10, y: geo.size.height / 2))
+                            }
+                            .rotation(
+                                .degrees(
+                                    <#T##degrees: Double##Double#>
+                                )
+                            )
+                        }
+                    } else {
+                        EmptyView()
+                    }
+                }
             }
             
             @ViewBuilder
