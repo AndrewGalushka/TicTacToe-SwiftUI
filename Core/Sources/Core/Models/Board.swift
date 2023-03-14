@@ -25,31 +25,37 @@ public struct Board: Equatable {
     
     init() {}
     
-    public func squere(at location: SquerePath) -> SquareState {
-        guard let squere = elements[location] else {
-            assertionFailure("Unexpected behaivour")
-            return .empty
+    public subscript(path: SquerePath) -> SquareState {
+        get {
+            guard let squere = elements[path] else {
+                assertionFailure("Unexpected behaivour")
+                return .empty
+            }
+            
+            return squere
         }
         
-        return squere
-    }
-    
-    mutating
-    public func setSqure(at location: SquerePath, to state: SquareState) {
-        self.elements[location] = state
+        set(newValue) {
+            elements[path] = newValue
+        }
     }
     
     public struct SquerePath: Equatable, Hashable {
-        let row: Row
-        let column: Column
+        public init(row: Board.SquerePath.Row, column: Board.SquerePath.Column) {
+            self.row = row
+            self.column = column
+        }
         
-        enum Row: Int, Equatable, Hashable {
+        public let row: Row
+        public let column: Column
+        
+        public enum Row: Int, Equatable, Hashable {
             case one
             case two
             case thee
         }
         
-        enum Column: Int, Equatable, Hashable {
+        public enum Column: Int, Equatable, Hashable {
             case one
             case two
             case three

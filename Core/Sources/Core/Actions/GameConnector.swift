@@ -9,12 +9,24 @@ import Foundation
 
 public extension Actions {
     enum GameConnector {
-        public struct Start: Action {
-            public init() {}
+        public enum Idle {
+            public struct Start: Action {
+                public init() {}
+            }
         }
         
-        public struct BackToMainMenu: Action {
-            public init() {}
+        public enum ActiveGame {
+            public struct Back: Action {
+                public init() {}
+            }
+            
+            public struct SquareTap: Action {
+                public init(path: Board.SquerePath) {
+                    self.path = path
+                }
+                
+                public let path: Board.SquerePath
+            }
         }
     }
 }

@@ -8,13 +8,70 @@
 import SwiftUI
 import Core
 
+extension GameView {
+    enum GameState: Equatable {
+        case idle(onStart: Command)
+        case active(ActiveGame)
+    }
+    
+    struct ActiveGame: Equatable {
+        let board: Board
+        let turnOwner: Player
+        let onBack: Command
+    }
+    
+    public enum Player: Equatable {
+        case player_X
+        case player_O
+        
+        static var initial: Player {
+            .player_X
+        }
+    }
+    
+    struct Board: Equatable {
+        var row1: Row
+        var row2: Row
+        var row3: Row
+        
+        struct Row: Equatable {
+            let first: SquareState
+            let second: SquareState
+            let third: SquareState
+        }
+        
+        enum SquareState: Equatable {
+            case empty(onTap: Command)
+            case filled_x
+            case filled_0
+        }
+    }
+}
+
 struct GameView: View {
     let state: GameState
     
     var body: some View {
         switch state {
         case .idle(let onStart):
-            Button(action: onStart.perform) {
+            IdleGameView(
+                onStart: onStart.perform
+            )
+        case .active(let game):
+            ActiveGameView(
+                board: game.board,
+                onBack: game.onBack.perform
+            )
+        }
+    }
+}
+
+extension GameView {
+    struct IdleGameView: View {
+        let onStart: () -> Void
+        
+        var body: some View {
+            Button(action: onStart) {
                 Text("Start")
                     .foregroundColor(Color.black)
                     .padding()
@@ -24,19 +81,18 @@ struct GameView: View {
                             .foregroundColor(Color.yellow)
                     }
             }
-        case .running(let onBack):
-            ActiveGameView(
-                onBack: onBack.perform
-            )
         }
     }
-    
+}
+
+extension GameView {
     struct ActiveGameView: View {
+        let board: Board
         var onBack: () -> Void
         
         var body: some View {
             VStack {
-                grid()
+                BoardView(board: board)
                 
                 Button(action: self.onBack) {
                     Text("Back")
@@ -44,49 +100,56 @@ struct GameView: View {
             }
         }
         
-        func grid() -> some View {
-            VStack(alignment: .center, spacing: 1) {
-                ForEach(0..<3) { _ in
+        struct BoardView: View {
+            let board: Board
+            
+            var body: some View {
+                VStack(alignment: .center, spacing: 1) {
                     HStack(alignment: .center, spacing: 1) {
-                        ForEach(0..<3) { _ in
-                            BoardSquere()
-                        }
+                        square(for: board.row1.first)
+                        square(for: board.row1.second)
+                        square(for: board.row1.third)
+                    }
+                    
+                    HStack(alignment: .center, spacing: 1) {
+                        square(for: board.row2.first)
+                        square(for: board.row2.second)
+                        square(for: board.row2.third)
+                    }
+                    
+                    HStack(alignment: .center, spacing: 1) {
+                        square(for: board.row3.first)
+                        square(for: board.row3.second)
+                        square(for: board.row3.third)
                     }
                 }
+                .padding()
+                .aspectRatio(1, contentMode: .fit)
             }
-            .padding()
-            .aspectRatio(1, contentMode: .fit)
-        }
-    }
-    
-    struct BoardSquere: View {
-        @State
-        private var isTicked: Bool = false
-        
-        var body: some View {
-            ZStack {
-                Rectangle()
-                    .foregroundColor(.clear)
-                    .border(Color.black, width: 1)
-                
-                if isTicked {
-                    Circle()
-                        .inset(by: 10)
-                        .foregroundColor(Color.orange)
+            
+            @ViewBuilder
+            func square(for state: Board.SquareState) -> some View {
+                switch state {
+                case .filled_x:
+                    BoardSquere {
+                        XMarkShape()
+                            .foregroundColor(.orange)
+                    }
+                case .filled_0:
+                    BoardSquere {
+                        Circle()
+                            .foregroundColor(.black)
+                    }
+                case .empty(let onTap):
+                    BoardSquere(
+                        content: {
+                            EmptyView()
+                        },
+                        onTap: onTap
+                    )
                 }
             }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                self.isTicked.toggle()
-            }
         }
-    }
-}
-
-extension GameView {
-    enum GameState: Equatable {
-        case idle(onStart: Command)
-        case running(onBack: Command)
     }
 }
 
