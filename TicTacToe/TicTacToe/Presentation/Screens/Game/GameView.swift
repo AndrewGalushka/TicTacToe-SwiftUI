@@ -34,11 +34,15 @@ extension GameView {
         var row2: Row
         var row3: Row
         
-        var crossLineVector: CrossLineVector?
+        var crossLine: CrossLine?
         
-        struct CrossLineVector: Equatable {
-            let startPoint: UnitPoint
-            let endPoint: UnitPoint
+        struct CrossLine: Equatable {
+            let path: [Location]
+            
+            struct Location: Equatable {
+                let row: Int
+                let column: Int
+            }
         }
         
         struct Row: Equatable {
@@ -133,17 +137,29 @@ extension GameView {
                 .padding()
                 .aspectRatio(1, contentMode: .fit)
                 .overlay(alignment: .center) {
-                    if let crossLine = board.crossLineVector {
+                    if let crossLine = board.crossLine {
                         GeometryReader { geo in
                             Path { path in
-                                path.move(to: CGPoint(x: 10, y: geo.size.height / 2))
-                                path.addLine(to: CGPoint(x: geo.size.width - 10, y: geo.size.height / 2))
+                                func middlePointOfSquare(in location: GameView.Board.CrossLine.Location) -> CGPoint {
+                                    let totalSquaresInLine: CGFloat = 3
+                                    let squareLength: CGFloat = geo.size.width / totalSquaresInLine
+                                    let halfStep = squareLength / 2
+                                    
+                                    let x = CGFloat(location.row - 1) * squareLength + halfStep
+                                    let y = CGFloat(location.column - 1) * squareLength + halfStep
+                                    
+                                    return CGPoint(x: x, y: y)
+                                }
+                                
+                                crossLine.path.first.map {
+                                    path.move(to: middlePointOfSquare(in: $0) )
+                                }
+                                
+                                crossLine.path.dropFirst().forEach { location in
+                                    path.addLine(to: middlePointOfSquare(in: location))
+                                }
                             }
-                            .rotation(
-                                .degrees(
-                                    <#T##degrees: Double##Double#>
-                                )
-                            )
+                            .stroke(Color.blue, lineWidth: 10)
                         }
                     } else {
                         EmptyView()
@@ -152,7 +168,7 @@ extension GameView {
             }
             
             @ViewBuilder
-            func square(for state: Board.SquareState) -> some View {
+            func square(for state: GameView.Board.SquareState) -> some View {
                 switch state {
                 case .filled_x:
                     BoardSquere {
@@ -177,8 +193,41 @@ extension GameView {
     }
 }
 
+#if DEBUG
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        GameView.init(state: .idle(onStart: .nop))
+        GameView(
+            state: .active(
+                GameView.ActiveGame(
+                    board: GameView.Board(
+                        row1: GameView.Board.Row(
+                            first: .filled_x,
+                            second: .empty(onTap: .nop),
+                            third: .empty(onTap: .nop)
+                        ),
+                        row2: GameView.Board.Row(
+                            first: .empty(onTap: .nop),
+                            second: .filled_x,
+                            third: .empty(onTap: .nop)
+                        ),
+                        row3: GameView.Board.Row(
+                            first: .empty(onTap: .nop),
+                            second: .empty(onTap: .nop),
+                            third: .filled_x
+                        ),
+                        crossLine: GameView.Board.CrossLine(
+                            path: [
+                                GameView.Board.CrossLine.Location(row: 1, column: 1),
+                                GameView.Board.CrossLine.Location(row: 3, column: 3),
+                                GameView.Board.CrossLine.Location(row: 3, column: 1)
+                            ]
+                        )
+                    ),
+                    turnOwner: .player_X,
+                    onBack: .nop
+                )
+            )
+        )
     }
 }
+#endif
