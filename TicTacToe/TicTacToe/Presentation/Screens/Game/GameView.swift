@@ -134,8 +134,6 @@ extension GameView {
                         square(for: board.row3.third)
                     }
                 }
-                .padding()
-                .aspectRatio(1, contentMode: .fit)
                 .overlay(alignment: .center) {
                     if let crossLine = board.crossLine {
                         GeometryReader { geo in
@@ -159,12 +157,20 @@ extension GameView {
                                     path.addLine(to: middlePointOfSquare(in: location))
                                 }
                             }
-                            .stroke(Color.blue, lineWidth: 10)
+                            .stroke(
+                                Color.red.opacity(1),
+                                style: StrokeStyle(
+                                    lineWidth: 30,
+                                    lineCap: .round
+                                )
+                            )
                         }
                     } else {
                         EmptyView()
                     }
                 }
+                .padding()
+                .aspectRatio(1, contentMode: .fit)
             }
             
             @ViewBuilder
@@ -218,8 +224,7 @@ struct ContentView_Previews: PreviewProvider {
                         crossLine: GameView.Board.CrossLine(
                             path: [
                                 GameView.Board.CrossLine.Location(row: 1, column: 1),
-                                GameView.Board.CrossLine.Location(row: 3, column: 3),
-                                GameView.Board.CrossLine.Location(row: 3, column: 1)
+                                GameView.Board.CrossLine.Location(row: 3, column: 3)
                             ]
                         )
                     ),
