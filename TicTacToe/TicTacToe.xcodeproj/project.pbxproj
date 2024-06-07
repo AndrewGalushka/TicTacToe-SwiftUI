@@ -3,13 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A0ACFFA2C13349E007DCCB3 /* Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A0ACFF92C13349E007DCCB3 /* Shapes.swift */; };
 		2A3A7E5129BDD18F00C41A92 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 2A3A7E5029BDD18F00C41A92 /* Core */; };
 		2A7CC6DF29BFBC140085100E /* GameConnecotor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7CC6DE29BFBC140085100E /* GameConnecotor.swift */; };
-		6A27CF8329C0832B0051F86A /* BoardSquere.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A27CF8229C0832B0051F86A /* BoardSquere.swift */; };
+		6A27CF8329C0832B0051F86A /* BoardSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A27CF8229C0832B0051F86A /* BoardSquare.swift */; };
 		D1893F9B264D9BC700C993D5 /* TicTacToeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1893F9A264D9BC700C993D5 /* TicTacToeApp.swift */; };
 		D1893F9D264D9BC700C993D5 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1893F9C264D9BC700C993D5 /* GameView.swift */; };
 		D1893F9F264D9BC900C993D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D1893F9E264D9BC900C993D5 /* Assets.xcassets */; };
@@ -19,9 +20,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2A0ACFF92C13349E007DCCB3 /* Shapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shapes.swift; sourceTree = "<group>"; };
 		2A3A7E4E29BCCBB100C41A92 /* Core */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Core; path = ../Core; sourceTree = "<group>"; };
 		2A7CC6DE29BFBC140085100E /* GameConnecotor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameConnecotor.swift; sourceTree = "<group>"; };
-		6A27CF8229C0832B0051F86A /* BoardSquere.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardSquere.swift; sourceTree = "<group>"; };
+		6A27CF8229C0832B0051F86A /* BoardSquare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardSquare.swift; sourceTree = "<group>"; };
 		D1893F97264D9BC700C993D5 /* TicTacToe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TicTacToe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1893F9A264D9BC700C993D5 /* TicTacToeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicTacToeApp.swift; sourceTree = "<group>"; };
 		D1893F9C264D9BC700C993D5 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
@@ -73,7 +75,8 @@
 		6A27CF8129C0831C0051F86A /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				6A27CF8229C0832B0051F86A /* BoardSquere.swift */,
+				6A27CF8229C0832B0051F86A /* BoardSquare.swift */,
+				2A0ACFF92C13349E007DCCB3 /* Shapes.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -178,8 +181,9 @@
 		D1893F8F264D9BC700C993D5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1250;
-				LastUpgradeCheck = 1250;
+				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					D1893F96264D9BC700C993D5 = {
 						CreatedOnToolsVersion = 12.5;
@@ -222,9 +226,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				D1893F9D264D9BC700C993D5 /* GameView.swift in Sources */,
+				2A0ACFFA2C13349E007DCCB3 /* Shapes.swift in Sources */,
 				D1893FC4264DB33600C993D5 /* RootCoordinator.swift in Sources */,
 				2A7CC6DF29BFBC140085100E /* GameConnecotor.swift in Sources */,
-				6A27CF8329C0832B0051F86A /* BoardSquere.swift in Sources */,
+				6A27CF8329C0832B0051F86A /* BoardSquare.swift in Sources */,
 				D1893FC1264DB25100C993D5 /* TimeLogger.swift in Sources */,
 				D1893F9B264D9BC700C993D5 /* TicTacToeApp.swift in Sources */,
 			);
@@ -270,6 +275,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -284,13 +290,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = "";
 			};
 			name = Debug;
 		};
@@ -331,6 +338,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -339,12 +347,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = "";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -359,7 +368,7 @@
 				DEVELOPMENT_TEAM = YDDE2DY87F;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = TicTacToe/Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -384,7 +393,7 @@
 				DEVELOPMENT_TEAM = YDDE2DY87F;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = TicTacToe/Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

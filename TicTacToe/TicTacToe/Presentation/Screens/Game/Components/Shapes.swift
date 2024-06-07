@@ -1,31 +1,11 @@
 //
-//  BoardSquere.swift
+//  Shapes.swift
 //  TicTacToe
 //
-//  Created by Andrew Halushka on 14.03.2023.
+//  Created by ira on 07.06.2024.
 //
 
 import SwiftUI
-import Core
-
-struct BoardSquere<Content: View>: View {
-    @ViewBuilder var content: Content
-    var onTap: Command = .nop
-    
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.clear)
-                .border(Color.black, width: 1)
-            
-            content.padding(10)
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            onTap.perform()
-        }
-    }
-}
 
 struct XMarkShape: Shape {
     func path(in rect: CGRect) -> Path {
@@ -36,9 +16,10 @@ struct XMarkShape: Shape {
                                                 y: center.y - canvasSize.height / 2),
                                 size: canvasSize)
         let canvasOrigin = canvasRect.origin
-        let lengthBetweenLines = canvasSize.width * 0.1
-        let pointOffsetFromCorner = sqrt(pow(lengthBetweenLines, 2) / 2)
-        let pointOffsetFromCenter = sqrt(2 * pow(lengthBetweenLines, 2)) / 2
+        let lineThickness = canvasSize.width * 0.1
+        
+        let pointOffsetFromCorner = (lineThickness * sqrt(2)) / 2
+        let pointOffsetFromCenter = pointOffsetFromCorner
         
         let topCenterPoint = CGPoint(x: center.x,
                                      y: center.y - pointOffsetFromCenter)
@@ -86,5 +67,19 @@ struct XMarkShape: Shape {
         path.closeSubpath()
         
         return Path(path)
+    }
+}
+
+struct CrossShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        
+        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        
+        return path
     }
 }

@@ -16,16 +16,22 @@ public extension Actions {
         }
         
         public enum ActiveGame {
+            public struct Reset: Action {
+                public init() {}
+            }
+            
             public struct Back: Action {
                 public init() {}
             }
             
             public struct SquareTap: Action {
-                public init(path: Board.SquerePath) {
-                    self.path = path
+                public init(x: Int, y: Int) {
+                    self.x = x
+                    self.y = y
                 }
                 
-                public let path: Board.SquerePath
+                public let x: Int
+                public let y: Int
             }
         }
     }

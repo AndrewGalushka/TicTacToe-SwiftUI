@@ -8,57 +8,6 @@
 import SwiftUI
 import Core
 
-extension GameView {
-    enum GameState: Equatable {
-        case idle(onStart: Command)
-        case active(ActiveGame)
-    }
-    
-    struct ActiveGame: Equatable {
-        let board: Board
-        let turnOwner: Player
-        let onBack: Command
-    }
-    
-    public enum Player: Equatable {
-        case player_X
-        case player_O
-        
-        static var initial: Player {
-            .player_X
-        }
-    }
-    
-    struct Board: Equatable {
-        var row1: Row
-        var row2: Row
-        var row3: Row
-        
-        var crossLine: CrossLine?
-        
-        struct CrossLine: Equatable {
-            let path: [Location]
-            
-            struct Location: Equatable {
-                let row: Int
-                let column: Int
-            }
-        }
-        
-        struct Row: Equatable {
-            let first: SquareState
-            let second: SquareState
-            let third: SquareState
-        }
-        
-        enum SquareState: Equatable {
-            case empty(onTap: Command)
-            case filled_x
-            case filled_0
-        }
-    }
-}
-
 struct GameView: View {
     let state: GameState
     
@@ -70,9 +19,63 @@ struct GameView: View {
             )
         case .active(let game):
             ActiveGameView(
-                board: game.board,
+                board: game.board, 
+                onReset: game.reset.perform,
                 onBack: game.onBack.perform
             )
+        }
+    }
+    
+    enum GameState {
+        case idle(onStart: Command)
+        case active(ActiveGame)
+    }
+    
+    struct ActiveGame {
+        let board: Board
+        let turnOwner: Player
+        let reset: Command
+        let onBack: Command
+    }
+    
+    public enum Player {
+        case player_X
+        case player_O
+        
+        static var initial: Player {
+            .player_X
+        }
+    }
+    
+    struct Board {
+        var row1: Row
+        var row2: Row
+        var row3: Row
+        
+        let size = 3
+        
+        var crossLine: CrossLine?
+        
+        struct CrossLine {
+            let start: Location
+            let end: Location
+            
+            struct Location {
+                let row: Int
+                let column: Int
+            }
+        }
+        
+        struct Row {
+            let first: SquareState
+            let second: SquareState
+            let third: SquareState
+        }
+        
+        enum SquareState {
+            case empty(onTap: Command)
+            case filled_x
+            case filled_0
         }
     }
 }
@@ -82,16 +85,18 @@ extension GameView {
         let onStart: () -> Void
         
         var body: some View {
+            
             Button(action: onStart) {
                 Text("Start")
                     .foregroundColor(Color.black)
                     .padding()
+                    .frame(maxWidth: .infinity)
                     .background {
                         Capsule()
-                            .padding(.horizontal, -30)
                             .foregroundColor(Color.yellow)
                     }
             }
+            .padding(32)
         }
     }
 }
@@ -99,101 +104,122 @@ extension GameView {
 extension GameView {
     struct ActiveGameView: View {
         let board: Board
+        var onReset: () -> Void
         var onBack: () -> Void
         
         var body: some View {
             VStack {
+                HStack {
+                    Button(action: onBack) {
+                        Image(systemName: "arrow.backward")
+                    }
+                    Spacer()
+                    Button(action: onReset) {
+                        Image(systemName: "pencil.and.outline")
+                    }
+                }
                 BoardView(board: board)
+            }
+            .padding(30)
+        }
+    }
+    
+    struct BoardView: View {
+        let board: Board
+        @State private var crossAnimation: Bool = false
+        
+        var body: some View {
+            VStack(alignment: .center, spacing: 1) {
+                HStack(alignment: .center, spacing: 1) {
+                    square(for: board.row1.first)
+                    square(for: board.row1.second)
+                    square(for: board.row1.third)
+                }
                 
-                Button(action: self.onBack) {
-                    Text("Back")
+                HStack(alignment: .center, spacing: 1) {
+                    square(for: board.row2.first)
+                    square(for: board.row2.second)
+                    square(for: board.row2.third)
+                }
+                
+                HStack(alignment: .center, spacing: 1) {
+                    square(for: board.row3.first)
+                    square(for: board.row3.second)
+                    square(for: board.row3.third)
                 }
             }
+            .overlay(alignment: .center) {
+                if let crossLine = board.crossLine {
+                    let winningCrossLineThickness: CGFloat = 16
+                    GeometryReader { geo in
+                        Path { path in
+                            let squareLength: CGFloat = geo.size.width / CGFloat(board.size)
+                            
+                            func middlePointOfSquare(in location: Board.CrossLine.Location) -> CGPoint {
+                                let halfStep = squareLength / 2
+                                
+                                let x = CGFloat(location.column) * squareLength + halfStep
+                                let y = CGFloat(location.row) * squareLength + halfStep
+                                
+                                return CGPoint(x: x, y: y)
+                            }
+                            
+                            let start = middlePointOfSquare(in: crossLine.start)
+                            let finish = middlePointOfSquare(in: crossLine.end)
+                            
+                            path.move(to: start)
+                            path.addLine(to: finish)
+                        }
+                        .trim(from: 0, to: crossAnimation ? 1 : 0)
+                        .stroke(
+                            Color.white,
+                            style: StrokeStyle(
+                                lineWidth: winningCrossLineThickness,
+                                lineCap: .round
+                            )
+                        )
+                        .onAppear {
+                            withAnimation {
+                                crossAnimation = true
+                            }
+                        }
+                        .onDisappear {
+                            crossAnimation = false
+                        }
+                    }
+                } else {
+                    EmptyView()
+                }
+            }
+            .aspectRatio(1, contentMode: .fit)
         }
         
-        struct BoardView: View {
-            let board: Board
-            
-            var body: some View {
-                VStack(alignment: .center, spacing: 1) {
-                    HStack(alignment: .center, spacing: 1) {
-                        square(for: board.row1.first)
-                        square(for: board.row1.second)
-                        square(for: board.row1.third)
-                    }
-                    
-                    HStack(alignment: .center, spacing: 1) {
-                        square(for: board.row2.first)
-                        square(for: board.row2.second)
-                        square(for: board.row2.third)
-                    }
-                    
-                    HStack(alignment: .center, spacing: 1) {
-                        square(for: board.row3.first)
-                        square(for: board.row3.second)
-                        square(for: board.row3.third)
-                    }
-                }
-                .overlay(alignment: .center) {
-                    if let crossLine = board.crossLine {
-                        GeometryReader { geo in
-                            Path { path in
-                                func middlePointOfSquare(in location: GameView.Board.CrossLine.Location) -> CGPoint {
-                                    let totalSquaresInLine: CGFloat = 3
-                                    let squareLength: CGFloat = geo.size.width / totalSquaresInLine
-                                    let halfStep = squareLength / 2
-                                    
-                                    let x = CGFloat(location.row - 1) * squareLength + halfStep
-                                    let y = CGFloat(location.column - 1) * squareLength + halfStep
-                                    
-                                    return CGPoint(x: x, y: y)
-                                }
-                                
-                                crossLine.path.first.map {
-                                    path.move(to: middlePointOfSquare(in: $0) )
-                                }
-                                
-                                crossLine.path.dropFirst().forEach { location in
-                                    path.addLine(to: middlePointOfSquare(in: location))
-                                }
-                            }
-                            .stroke(
-                                Color.red.opacity(1),
-                                style: StrokeStyle(
-                                    lineWidth: 30,
-                                    lineCap: .round
-                                )
-                            )
-                        }
-                    } else {
-                        EmptyView()
-                    }
-                }
-                .padding()
-                .aspectRatio(1, contentMode: .fit)
-            }
-            
-            @ViewBuilder
-            func square(for state: GameView.Board.SquareState) -> some View {
-                switch state {
-                case .filled_x:
-                    BoardSquere {
-                        XMarkShape()
-                            .foregroundColor(.orange)
-                    }
-                case .filled_0:
-                    BoardSquere {
-                        Circle()
+        @ViewBuilder
+        func square(for state: GameView.Board.SquareState) -> some View {
+            switch state {
+            case .filled_x:
+                BoardSquare {
+                    GeometryReader { geo in
+                        CrossShape()
+                            .stroke(style: StrokeStyle(lineWidth: geo.size.width * 0.1, lineCap: .round))
                             .foregroundColor(.black)
                     }
-                case .empty(let onTap):
-                    BoardSquere(
-                        content: {
-                            EmptyView()
-                        },
-                        onTap: onTap
-                    )
                 }
+            case .filled_0:
+                BoardSquare {
+                    GeometryReader { geo in
+                        Circle()
+                            .stroke(style: StrokeStyle(lineWidth: geo.size.width * 0.1))
+                            .foregroundColor(.black)
+                    }
+                }
+            case .empty(let onTap):
+                BoardSquare(
+                    content: {
+                        EmptyView()
+                    },
+                    onTap: onTap
+                )
             }
         }
     }
@@ -222,13 +248,12 @@ struct ContentView_Previews: PreviewProvider {
                             third: .filled_x
                         ),
                         crossLine: GameView.Board.CrossLine(
-                            path: [
-                                GameView.Board.CrossLine.Location(row: 1, column: 1),
-                                GameView.Board.CrossLine.Location(row: 3, column: 3)
-                            ]
+                            start: GameView.Board.CrossLine.Location(row: 0, column: 0),
+                            end: GameView.Board.CrossLine.Location(row: 2, column: 2)
                         )
                     ),
-                    turnOwner: .player_X,
+                    turnOwner: .player_X, 
+                    reset: .nop,
                     onBack: .nop
                 )
             )

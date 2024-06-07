@@ -11,7 +11,8 @@ import Core
 @main
 struct TicTacToeApp: App {
     @StateObject var store = EnvironmentStore(
-        store: AppStore(state: .initial, reducer: reduce(_:with:), middlewares: [])
+        store: 
+            AppStore(state: .initial, reducer: reduce(_:with:), middlewares: [])
     )
     
     var body: some Scene {
