@@ -199,24 +199,18 @@ extension GameView {
             switch state {
             case .filled_x:
                 BoardSquare {
-                    GeometryReader { geo in
-                        CrossShape()
-                            .stroke(style: StrokeStyle(lineWidth: geo.size.width * 0.1, lineCap: .round))
-                            .foregroundColor(.black)
-                    }
+                    CrossShape()
                 }
+                .foregroundStyle(.orange.opacity(0.2))
             case .filled_0:
                 BoardSquare {
-                    GeometryReader { geo in
-                        Circle()
-                            .stroke(style: StrokeStyle(lineWidth: geo.size.width * 0.1))
-                            .foregroundColor(.black)
-                    }
+                    Circle()
                 }
+                .foregroundColor(.black)
             case .empty(let onTap):
                 BoardSquare(
                     content: {
-                        EmptyView()
+                        Path()
                     },
                     onTap: onTap
                 )
